@@ -66,13 +66,13 @@ def granger_causality(target, covariates):
         
      Returns:
         dict: a dictionary with the results of the Granger causality tests
-    """
+     """
     
      # Combine the target and control series into one datafram
      data = pd.concat([target, covariates], axis=1)
      data.columns = ['target'] + [f'control_{i+1}' for i in range(len(covariates))]
     
-    # Compute Granger causality for each control series
+     # Compute Granger causality for each control series
      results = {}
      for i, control in enumerate(covariates):
         # Drop any missing values

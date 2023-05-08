@@ -4,6 +4,7 @@ import yfinance as yf
 from datetime import datetime
 import scipy.stats as stats
 import math
+from statsmodels.tsa.stattools import grangercausalitytests
 
 def get_data(tickers, start_date, end_date):
 
@@ -49,3 +50,35 @@ def get_data(tickers, start_date, end_date):
     result = result.dropna()
 
     return result
+
+
+
+
+
+def granger_causality(target, covariates):
+     """
+     Computes Granger causality between a target series and multiple control series
+     Goal: Identify good predictor series for a Ticker
+    
+     Parameters:
+        target (pd.Series): the target series
+        controls (list of pd.Series): the covariate series
+        
+     Returns:
+        dict: a dictionary with the results of the Granger causality tests
+    """
+    
+     # Combine the target and control series into one datafram
+     data = pd.concat([target, covariates], axis=1)
+     data.columns = ['target'] + [f'control_{i+1}' for i in range(len(covariates))]
+    
+    # Compute Granger causality for each control series
+     results = {}
+     for i, control in enumerate(covariates):
+        # Drop any missing values
+        data_subset = data[['target', f'control_{i+1}']].dropna()
+        # Perform the Granger causality test
+        result = grangercausalitytests(data_subset, maxlag=10, verbose=False)
+        results[f'control_{i+1}'] = result
+        
+     return results

@@ -78,7 +78,7 @@ def granger_causality(df, target):
         # Drop any missing values
         data_subset = df[[str(target), i]]
         # Perform the Granger causality test
-        result = grangercausalitytests(data_subset, maxlag=10, verbose=False)
+        result = grangercausalitytests(data_subset, maxlag=10, verbose=True)
         gc_result[i] = result
         #gc_result[value] = result
         

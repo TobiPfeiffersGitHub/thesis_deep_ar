@@ -55,30 +55,32 @@ def get_data(tickers, start_date, end_date):
 
 
 
-def granger_causality(target, covariates):
+def granger_causality(df, target):
      """
-     Computes Granger causality between a target series and multiple control series
+     Computes Granger causality between a target series and multiple control series in a data frame
      Goal: Identify good predictor series for a Ticker
     
      Parameters:
-        target (pd.Series): the target series
-        controls (list of pd.Series): the covariate series
+        df: data frame with variables of interest 
+        target: name of the target series in the data frame
+        
         
      Returns:
         dict: a dictionary with the results of the Granger causality tests
      """
-    
-     # Combine the target and control series into one datafram
-     data = pd.concat([target, covariates], axis=1)
-     data.columns = ['target'] + [f'control_{i+1}' for i in range(len(covariates))]
-    
-     # Compute Granger causality for each control series
-     results = {}
-     for i, control in enumerate(covariates):
+
+     gc_result = {}
+
+     covariates = df.columns.tolist()
+     covariates.pop(0)
+
+     for i in covariates:
         # Drop any missing values
-        data_subset = data[['target', f'control_{i+1}']].dropna()
+        data_subset = df[[str(target), i]]
         # Perform the Granger causality test
         result = grangercausalitytests(data_subset, maxlag=10, verbose=False)
-        results[f'control_{i+1}'] = result
+        gc_result[i] = result
+        #gc_result[value] = result
         
-     return results
+     return result
+
